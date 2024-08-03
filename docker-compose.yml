@@ -1,0 +1,74 @@
+version: '3'
+services:
+  django1:
+    build:
+      context: ./django
+    command: gunicorn project.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/code/django/static
+      - media_volume:/code/django/media
+      - ./django/templates:/code/django/templates
+    expose:
+      - "8000"
+    networks:
+      - mynetwork
+    depends_on:
+      - postgres
+  django2:
+    build:
+      context: ./django
+    command: gunicorn project.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/code/django/static
+      - media_volume:/code/django/media
+      - ./django/templates:/code/django/templates
+    expose:
+      - "8000"
+    networks:
+      - mynetwork
+    depends_on:
+      - postgres
+  django3:
+    build:
+      context: ./django
+    command: gunicorn project.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/code/django/static
+      - media_volume:/code/django/media
+      - ./django/templates:/code/django/templates
+    expose:
+      - "8000"
+    networks:
+      - mynetwork
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+  nginx:
+    build:
+      context: ./nginx
+    volumes:
+      - static_volume:/code/django/static
+      - media_volume:/code/django/media
+    ports:
+      - "80:80"
+    depends_on:
+      - django1
+      - django2
+      - django3
+    networks:
+      - mynetwork
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+networks:
+  mynetwork:
